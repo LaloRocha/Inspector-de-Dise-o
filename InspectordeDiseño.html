@@ -1,0 +1,711 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --dark: #2b2d42;
+            --light: #f8f9fa;
+            --success: #4cc9f0;
+            --info: #4895ef;
+            --warning: #f77f00;
+            --danger: #e63946;
+            --radius: 8px;
+        }
+
+        ```
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: var(--dark);
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+            .header h1 {
+                margin-bottom: 10px;
+                color: var(--primary);
+            }
+
+            .header p {
+                color: #6c757d;
+                font-size: 18px;
+                max-width: 700px;
+                margin: 0 auto;
+            }
+
+        .main-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 992px) {
+            .main-panel {
+                grid-template-columns: 0.7fr 1.3fr;
+            }
+        }
+
+        .upload-panel {
+            background: white;
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .upload-area {
+            border: 2px dashed #ced4da;
+            border-radius: var(--radius);
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+            .upload-area:hover {
+                border-color: var(--primary);
+                background-color: rgba(67, 97, 238, 0.05);
+            }
+
+            .upload-area i {
+                font-size: 48px;
+                color: #adb5bd;
+                margin-bottom: 15px;
+            }
+
+            .upload-area p {
+                margin: 5px 0;
+                color: #6c757d;
+            }
+
+        .file-input {
+            display: none;
+        }
+
+        .sample-images {
+            margin-top: 30px;
+        }
+
+            .sample-images h3 {
+                margin-bottom: 15px;
+                font-size: 16px;
+                color: #6c757d;
+            }
+
+        .sample-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+        }
+
+        .sample-image {
+            width: 100%;
+            height: 60px;
+            border-radius: 4px;
+            cursor: pointer;
+            object-fit: cover;
+            transition: transform 0.2s ease;
+        }
+
+            .sample-image:hover {
+                transform: scale(1.05);
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+        .results-panel {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #6c757d;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+            .tab.active {
+                color: var(--primary);
+                border-bottom-color: var(--primary);
+            }
+
+            .tab:hover:not(.active) {
+                color: var(--secondary);
+                background-color: rgba(67, 97, 238, 0.05);
+            }
+
+        .tab-content {
+            padding: 25px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+            .tab-pane.active {
+                display: block;
+            }
+
+        .analysis-card {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+        }
+
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .analysis-title {
+            font-weight: 600;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .analysis-score {
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50px;
+            padding: 3px 10px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .analyze-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            .analyze-button:hover {
+                background-color: var(--secondary);
+            }
+
+        .color-palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .color-item {
+            width: 60px;
+            text-align: center;
+        }
+
+        .color-swatch {
+            height: 40px;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            border: 1px solid #dee2e6;
+        }
+
+        .color-hex {
+            font-size: 12px;
+            color: #6c757d;
+            word-break: break-all;
+        }
+
+        .suggestion-list {
+            margin-top: 10px;
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            border-radius: 4px;
+            background-color: rgba(67, 97, 238, 0.05);
+            margin-bottom: 5px;
+            border-left: 3px solid var(--info);
+        }
+
+            .suggestion-item.critical {
+                border-left-color: var(--danger);
+            }
+
+            .suggestion-item.improvement {
+                border-left-color: var(--warning);
+            }
+
+            .suggestion-item.good {
+                border-left-color: var(--success);
+            }
+
+        .preview-container {
+            position: relative;
+            margin-top: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .preview-image {
+            width: 100%;
+            display: block;
+        }
+
+        .preview-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: linear-gradient(rgba(67, 97, 238, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(67, 97, 238, 0.1) 1px, transparent 1px);
+            background-size: 25px 25px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .thirds-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: linear-gradient(to right, transparent 33.33%, rgba(67, 97, 238, 0.3) 33.33%, rgba(67, 97, 238, 0.3) 33.66%, transparent 33.66%, transparent 66.66%, rgba(67, 97, 238, 0.3) 66.66%, rgba(67, 97, 238, 0.3) 67%, transparent 67%), linear-gradient(to bottom, transparent 33.33%, rgba(67, 97, 238, 0.3) 33.33%, rgba(67, 97, 238, 0.3) 33.66%, transparent 33.66%, transparent 66.66%, rgba(67, 97, 238, 0.3) 66.66%, rgba(67, 97, 238, 0.3) 67%, transparent 67%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .toggle-button {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+            .toggle-button:hover {
+                background-color: #e9ecef;
+            }
+
+            .toggle-button.active {
+                background-color: var(--primary);
+                color: white;
+                border-color: var(--primary);
+            }
+
+        .font-analysis {
+            margin-top: 15px;
+        }
+
+        .font-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .font-name {
+            font-weight: 600;
+        }
+
+        .font-details {
+            display: flex;
+            font-size: 14px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .font-detail {
+            margin-right: 15px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Ejemplo de imágenes de muestra */
+        .placeholder-logo {
+            width: 100%;
+            height: 100%;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #adb5bd;
+            font-weight: 300;
+            font-size: 10px;
+            text-align: center;
+        }
+    </style>
+
+    ```
+
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>Inspector de Diseño con IA</h1>
+            <p>Analiza diseños, obtén insights y aprende mejores prácticas a través de ejemplos interactivos.</p>
+        </div>
+
+        ```
+        <div class="main-panel">
+            <div class="upload-panel">
+                <h2>Sube un Diseño</h2>
+                <p>Sube una imagen de un sitio web, una interfaz o un diseño gráfico para analizarlo.</p>
+
+                <div class="upload-area" id="uploadArea">
+                    <svg xmlns="<http://www.w3.org/2000/svg>" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#adb5bd" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                        <path d="M12 12v9"></path>
+                        <path d="m16 16-4-4-4 4"></path>
+                    </svg>
+                    <p>Arrastra y suelta una imagen aquí</p>
+                    <p>o</p>
+                    <button class="analyze-button">Seleccionar Archivo</button>
+                </div>
+                <input type="file" id="fileInput" class="file-input" accept="image/*">
+
+                <div class="sample-images">
+                    <h3>O prueba con estos ejemplos:</h3>
+                    <div class="sample-grid">
+                        <div class="placeholder-logo" onclick="loadSampleDesign(1)">Página Web Minimalista</div>
+                        <div class="placeholder-logo" onclick="loadSampleDesign(2)">App Mobile</div>
+                        <div class="placeholder-logo" onclick="loadSampleDesign(3)">E-commerce</div>
+                        <div class="placeholder-logo" onclick="loadSampleDesign(4)">Portafolio</div>
+                        <div class="placeholder-logo" onclick="loadSampleDesign(5)">Landing Page</div>
+                        <div class="placeholder-logo" onclick="loadSampleDesign(6)">Dashboard</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel">
+                <div class="tabs">
+                    <div class="tab active" data-tab="composicion">Composición</div>
+                    <div class="tab" data-tab="color">Color</div>
+                    <div class="tab" data-tab="tipografia">Tipografía</div>
+                    <div class="tab" data-tab="ui">UI/UX</div>
+                    <div class="tab" data-tab="mejoras">Mejoras</div>
+                </div>
+
+                <div class="loading" id="loadingIndicator">
+                    <div class="loading-spinner"></div>
+                    <p>Analizando diseño con IA...</p>
+                </div>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="composicion">
+                        <div class="analysis-card">
+                            <div class="analysis-header">
+                                <h3 class="analysis-title">Composición y Layout</h3>
+                                <span class="analysis-score">8/10</span>
+                            </div>
+                            <p>Sube un diseño para analizarlo o selecciona uno de nuestros ejemplos.</p>
+
+                            <div id="previewContainer" class="preview-container" style="display: none;">
+                                <img id="previewImage" class="preview-image" src="placeholder.jpg" alt="Preview">
+                                <div class="preview-overlay">
+                                    <div id="gridOverlay" class="grid-overlay"></div>
+                                    <div id="thirdsOverlay" class="thirds-overlay"></div>
+                                </div>
+
+                                <div class="toggle-group">
+                                    <button class="toggle-button" onclick="toggleOverlay('gridOverlay')">Mostrar Grid</button>
+                                    <button class="toggle-button" onclick="toggleOverlay('thirdsOverlay')">Regla de los Tercios</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="color">
+                        <div class="analysis-card">
+                            <div class="analysis-header">
+                                <h3 class="analysis-title">Paleta de Color</h3>
+                                <span class="analysis-score">7/10</span>
+                            </div>
+                            <p>Detectaremos automáticamente la paleta de colores usada en el diseño.</p>
+
+                            <div class="color-palette">
+                                <div class="color-item">
+                                    <div class="color-swatch" style="background-color: #4361ee;"></div>
+                                    <div class="color-hex">#4361ee</div>
+                                </div>
+                                <div class="color-item">
+                                    <div class="color-swatch" style="background-color: #3a0ca3;"></div>
+                                    <div class="color-hex">#3a0ca3</div>
+                                </div>
+                                <div class="color-item">
+                                    <div class="color-swatch" style="background-color: #f72585;"></div>
+                                    <div class="color-hex">#f72585</div>
+                                </div>
+                                <div class="color-item">
+                                    <div class="color-swatch" style="background-color: #4cc9f0;"></div>
+                                    <div class="color-hex">#4cc9f0</div>
+                                </div>
+                                <div class="color-item">
+                                    <div class="color-swatch" style="background-color: #f8f9fa;"></div>
+                                    <div class="color-hex">#f8f9fa</div>
+                                </div>
+                            </div>
+
+                            <div class="suggestion-list">
+                                <h4>Análisis de Color</h4>
+                                <div class="suggestion-item improvement">
+                                    El contraste entre texto y fondo podría mejorarse en algunas áreas.
+                                </div>
+                                <div class="suggestion-item good">
+                                    Buena selección de colores complementarios.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="tipografia">
+                        <div class="analysis-card">
+                            <div class="analysis-header">
+                                <h3 class="analysis-title">Tipografía</h3>
+                                <span class="analysis-score">9/10</span>
+                            </div>
+                            <p>Analizaremos las fuentes utilizadas y su jerarquía visual.</p>
+
+                            <div class="font-analysis">
+                                <div class="font-item">
+                                    <div class="font-name">Montserrat</div>
+                                    <div class="font-details">
+                                        <span class="font-detail">Títulos principales</span>
+                                        <span class="font-detail">24-36px</span>
+                                        <span class="font-detail">700 (Bold)</span>
+                                    </div>
+                                </div>
+                                <div class="font-item">
+                                    <div class="font-name">Roboto</div>
+                                    <div class="font-details">
+                                        <span class="font-detail">Texto principal</span>
+                                        <span class="font-detail">16px</span>
+                                        <span class="font-detail">400 (Regular)</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="suggestion-list">
+                                <h4>Análisis Tipográfico</h4>
+                                <div class="suggestion-item good">
+                                    Excelente jerarquía visual con clara diferenciación entre títulos y texto.
+                                </div>
+                                <div class="suggestion-item improvement">
+                                    Considera aumentar ligeramente el interlineado para mejorar la legibilidad.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="ui">
+                        <div class="analysis-card">
+                            <div class="analysis-header">
+                                <h3 class="analysis-title">Elementos UI/UX</h3>
+                                <span class="analysis-score">8/10</span>
+                            </div>
+                            <p>Evaluaremos la usabilidad, accesibilidad y experiencia de usuario.</p>
+
+                            <div class="suggestion-list">
+                                <h4>Análisis UI/UX</h4>
+                                <div class="suggestion-item good">
+                                    Los elementos interactivos son claramente identificables.
+                                </div>
+                                <div class="suggestion-item improvement">
+                                    La densidad de información podría optimizarse en algunas secciones.
+                                </div>
+                                <div class="suggestion-item critical">
+                                    Algunos textos no cumplen con las pautas de accesibilidad WCAG 2.1.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="mejoras">
+                        <div class="analysis-card">
+                            <div class="analysis-header">
+                                <h3 class="analysis-title">Sugerencias de Mejora</h3>
+                            </div>
+                            <p>Recomendaciones basadas en principios de diseño y mejores prácticas.</p>
+
+                            <div class="suggestion-list">
+                                <div class="suggestion-item">
+                                    <strong>1. Mejorar contraste</strong>: Incrementa el contraste entre texto y fondo para mejorar la accesibilidad.
+                                </div>
+                                <div class="suggestion-item">
+                                    <strong>2. Consistencia visual</strong>: Mantén espaciados y márgenes uniformes en toda la interfaz.
+                                </div>
+                                <div class="suggestion-item">
+                                    <strong>3. Jerarquía informativa</strong>: Enfatiza elementos clave con tamaño y peso visual.
+                                </div>
+                                <div class="suggestion-item">
+                                    <strong>4. Espacio en blanco</strong>: Añade más espacio entre secciones para mejorar la legibilidad.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Cambiar entre tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+
+            const tabId = this.getAttribute('data-tab');
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // Simular cargar un diseño de muestra
+    function loadSampleDesign(sampleId) {
+        // Mostrar indicador de carga
+        document.getElementById('loadingIndicator').style.display = 'block';
+        document.querySelector('.tab-content').style.display = 'none';
+
+        // Simular análisis (en una aplicación real, aquí se analizaría la imagen)
+        setTimeout(() => {
+            document.getElementById('loadingIndicator').style.display = 'none';
+            document.querySelector('.tab-content').style.display = 'block';
+
+            // Mostrar contenedor de previsualización
+            document.getElementById('previewContainer').style.display = 'block';
+
+            // Actualizar análisis (en una aplicación real, se mostrarían los resultados del análisis)
+        }, 1500);
+    }
+
+    // Activar el área de arrastrar y soltar
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+
+    uploadArea.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files.length > 0) {
+            handleFile(fileInput.files[0]);
+        }
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#4361ee';
+        uploadArea.style.backgroundColor = 'rgba(67, 97, 238, 0.05)';
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.style.borderColor = '#ced4da';
+        uploadArea.style.backgroundColor = '';
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.style.borderColor = '#ced4da';
+        uploadArea.style.backgroundColor = '';
+
+        if (e.dataTransfer.files.length > 0) {
+            handleFile(e.dataTransfer.files[0]);
+        }
+    });
+
+    function handleFile(file) {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImage').src = e.target.result;
+                loadSampleDesign(0); // Disparar el análisis
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Conmutar las superposiciones
+    function toggleOverlay(overlayId) {
+        const overlay = document.getElementById(overlayId);
+        const button = event.currentTarget;
+
+        if (overlay.style.opacity === '1') {
+            overlay.style.opacity = '0';
+            button.classList.remove('active');
+        } else {
+            overlay.style.opacity = '1';
+            button.classList.add('active');
+        }
+    }
+    </script>
+
+    ```
+
+</body>
+</html>
